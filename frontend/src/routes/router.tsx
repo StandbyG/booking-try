@@ -1,4 +1,6 @@
 import { createBrowserRouter } from 'react-router-dom'
+import { AdminResourceDetailPage } from '@/features/admin/AdminResourceDetailPage'
+import { AdminResourceListPage } from '@/features/admin/AdminResourceListPage'
 import { LoginPage } from '@/features/auth/LoginPage'
 import { RegisterPage } from '@/features/auth/RegisterPage'
 import { MyReservationsPage } from '@/features/reservations/MyReservationsPage'
@@ -30,6 +32,13 @@ export const router = createBrowserRouter([
           { path: '/', element: <ResourceListPage /> },
           { path: '/resources/:id', element: <ResourceDetailPage /> },
           { path: '/reservations/me', element: <MyReservationsPage /> },
+          {
+            element: <ProtectedRoute requiredRole="ADMIN" />,
+            children: [
+              { path: '/admin', element: <AdminResourceListPage /> },
+              { path: '/admin/resources/:id', element: <AdminResourceDetailPage /> },
+            ],
+          },
         ],
       },
     ],

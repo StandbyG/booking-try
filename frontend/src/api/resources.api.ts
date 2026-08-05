@@ -11,6 +11,12 @@ export async function getResource(id: number): Promise<ResourceResponse> {
   return data
 }
 
+/** Solo ADMIN: incluye resources inactivos, para poder reactivarlos. */
+export async function listAllResources(): Promise<ResourceResponse[]> {
+  const { data } = await apiClient.get<ResourceResponse[]>('/resources/all')
+  return data
+}
+
 export async function createResource(payload: CreateResourceRequest): Promise<ResourceResponse> {
   const { data } = await apiClient.post<ResourceResponse>('/resources', payload)
   return data

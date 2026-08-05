@@ -26,6 +26,11 @@ export function AppLayout() {
               <NavLink to="/reservations/me" className={navLinkClass}>
                 Mis reservas
               </NavLink>
+              {user?.role === 'ADMIN' && (
+                <NavLink to="/admin" className={navLinkClass}>
+                  Admin
+                </NavLink>
+              )}
             </nav>
           </div>
           <div className="flex items-center gap-3">

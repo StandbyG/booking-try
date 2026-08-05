@@ -155,6 +155,47 @@ nuevo estado en la lista. En el camino aparecio el mismo bug de
 para su animacion de entrada/salida en React 18. Se corrigio igual que
 `Input`/`Button`.
 
+## Panel de admin (punto 6 — completado)
+
+Todo protegido por `ProtectedRoute requiredRole="ADMIN"` (redirige a `/` si
+el usuario no es admin), en `/admin` y `/admin/resources/:id`. Nav "Admin"
+solo visible para `role === 'ADMIN'`.
+
+- **Gap real encontrado en el backend**: `GET /api/v1/resources` solo
+  devolvia resources activos, asi que un admin que desactivaba uno no tenia
+  forma de encontrarlo despues para reactivarlo (`UpdateResourceRequest`
+  soporta volver a poner `active: true`, pero nada lo exponia). Se agrego
+  `GET /api/v1/resources/all` (solo ADMIN) para completar el ciclo
+  desactivar → reactivar. Ver el commit de backend correspondiente.
+- `AdminResourceListPage`: tabla (shadcn `Table`) con todos los resources
+  (activos e inactivos), + `ResourceFormDialog` compartido para crear y
+  editar (mismo componente, distinta mutation segun si viene con
+  `resource` o no).
+- `AdminResourceDetailPage`: info del resource + `AvailabilityManager`
+  (agregar regla con `Select`/`Input type="time"`, eliminar con un click) +
+  `ResourceReservationsTable` (todas las reservas del resource, con
+  "Cancelar" — reusa el mismo endpoint de cancelacion; el backend ya
+  permite que un ADMIN cancele cualquier reserva sin restriccion de dueño
+  ni de ventana minima).
+
+Verificado en el navegador (con capturas y, cuando un flujo de clicks daba
+un falso negativo por ambigüedad de selector en el script de prueba, con
+verificacion directa por API para confirmar que el comportamiento real de
+la app era correcto): ciclo completo crear → editar → agregar
+disponibilidad → eliminarla → desactivar (desaparece del listado de
+clientes, confirmado tanto por API como por captura) → reactivar, y
+cancelar una reserva ajena desde la tabla de admin.
+
+En el camino aparecio (y se corrigio) el mismo problema de `forwardRef`
+otra vez, ahora en `DialogOverlay`/`DialogContent`, `SelectTrigger` y
+`Switch`. Tambien un error de tipos real entre Zod y React Hook Form:
+`z.coerce.number()` genera un tipo de *input* (`unknown`) distinto al de
+*output* (`number`), lo que rompe la inferencia de `useForm<T>` cuando se
+declara el generico explicito. Se resolvio sacando `coerce` del schema y
+convirtiendo el valor a numero explicitamente en el `onChange` del input
+(`e.target.valueAsNumber`) en vez de pelear con los genericos de
+`Resolver`.
+
 ## Estructura de carpetas
 
 ```

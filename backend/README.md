@@ -114,6 +114,14 @@ password: Admin123!
 Swagger UI: `http://localhost:8080/swagger-ui.html`
 OpenAPI JSON: `http://localhost:8080/v3/api-docs`
 
+### CORS
+
+Los orígenes permitidos se configuran vía `booking.cors.allowed-origins`
+(`application.yml`) o la variable de entorno `CORS_ALLOWED_ORIGINS` (coma-
+separado si son varios). Por defecto: `http://localhost:5173` (dev server de
+Vite del frontend). Si el frontend corre en otro puerto/host, hay que
+ajustarlo o las llamadas del navegador van a fallar por CORS.
+
 ### Tests
 
 ```bash

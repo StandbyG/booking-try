@@ -29,10 +29,38 @@ compartibles por sobre atajos.
 ### Decisión: sesión sin refresh token
 
 El backend actual solo emite un `accessToken` de corta duración (no hay
-endpoint de refresh). El interceptor de axios (punto 3) va a manejar un 401
-limpiando la sesión y redirigiendo a `/login`, sin intentar un refresh
-silencioso — decisión tomada explícitamente para no construir infraestructura
-de refresh contra un backend que todavía no la tiene.
+endpoint de refresh). El interceptor de axios maneja un 401 limpiando la
+sesión y redirigiendo a `/login`, sin intentar un refresh silencioso —
+decisión tomada explícitamente para no construir infraestructura de refresh
+contra un backend que todavía no la tiene.
+
+## Cliente API y tipos base (punto 2 — completado)
+
+- `src/types/`: interfaces TypeScript que reflejan 1:1 los DTOs del backend
+  (`UserResponse`, `AuthResponse`, `ResourceResponse`, `AvailabilityResponse`,
+  `ReservationResponse`, `TimeSlotResponse`, `ApiErrorResponse`, etc). Sin
+  dependencias de React — portables a un paquete compartido.
+- `src/lib/auth-token.ts`: única fuente de verdad del token/usuario en
+  `localStorage`, deliberadamente fuera de React/Zustand. Tanto el
+  interceptor de axios como el store de Zustand (próximo punto) leen/escriben
+  acá, evitando un ciclo de importación entre `lib/` y `store/`.
+- `src/lib/axios.ts`: instancia de axios con `baseURL` desde
+  `VITE_API_BASE_URL`. Interceptor de request adjunta `Authorization: Bearer`;
+  interceptor de response, ante un 401, limpia la sesión y hace un
+  hard-redirect a `/login` (fuera del árbol de React, por eso no usa
+  `useNavigate`).
+- `src/lib/api-error.ts`: helpers para extraer un mensaje legible (y los
+  `validationErrors` de campo) de cualquier error de axios, para usar en
+  toasts y en `setError` de React Hook Form.
+- `src/api/*.api.ts`: funciones tipadas por recurso (`auth`, `resources`,
+  `availability`, `reservations`) sobre la instancia de axios.
+
+Verificado con un smoke test real (login contra el backend corriendo +
+request autenticado) via un script de Playwright — en el camino encontré y
+arreglé un bug real: el backend no tenía **CORS** configurado, así que el
+navegador bloqueaba todas las llamadas desde `localhost:5173`. Se agregó
+`SecurityConfig.corsConfigurationSource()` en el backend, configurable vía
+`booking.cors.allowed-origins` / `CORS_ALLOWED_ORIGINS`.
 
 ## Estructura de carpetas
 

@@ -52,6 +52,13 @@ public class ResourceController {
         return resourceService.listActive().stream().map(resourceMapper::toResponse).toList();
     }
 
+    @GetMapping("/all")
+    @PreAuthorize("hasRole('ADMIN')")
+    @Operation(summary = "Listar todos los resources, incluyendo inactivos (solo ADMIN)")
+    public List<ResourceResponse> listAll() {
+        return resourceService.listAll().stream().map(resourceMapper::toResponse).toList();
+    }
+
     @GetMapping("/{id}")
     @Operation(summary = "Obtener un resource por id")
     public ResourceResponse getById(@PathVariable Long id) {

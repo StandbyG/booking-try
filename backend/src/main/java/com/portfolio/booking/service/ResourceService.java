@@ -14,5 +14,8 @@ public interface ResourceService {
 
     List<Resource> listActive();
 
+    /** Incluye inactivos: para el panel de admin, que necesita poder reactivarlos. */
+    List<Resource> listAll();
+
     void deactivate(Long id);
 }

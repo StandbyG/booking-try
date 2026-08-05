@@ -57,6 +57,11 @@ public class ResourceServiceImpl implements ResourceService {
     }
 
     @Override
+    public List<Resource> listAll() {
+        return resourceRepository.findAll();
+    }
+
+    @Override
     @Transactional
     public void deactivate(Long id) {
         Resource resource = resourceRepository.findById(id)

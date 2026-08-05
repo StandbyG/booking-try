@@ -141,6 +141,7 @@ verifica el requisito de no-overbooking bajo concurrencia real.
 | POST   | `/api/v1/auth/login`                          | público     | Login, devuelve JWT                   |
 | POST   | `/api/v1/resources`                           | ADMIN       | Crear resource                        |
 | GET    | `/api/v1/resources`                           | autenticado | Listar resources activos              |
+| GET    | `/api/v1/resources/all`                       | ADMIN       | Listar todos los resources (incl. inactivos) |
 | PUT    | `/api/v1/resources/{id}`                      | ADMIN       | Actualizar resource                   |
 | DELETE | `/api/v1/resources/{id}`                      | ADMIN       | Desactivar resource                   |
 | POST   | `/api/v1/resources/{id}/availabilities`       | ADMIN       | Definir disponibilidad semanal        |

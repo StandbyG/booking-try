@@ -122,6 +122,39 @@ para un slot puntual, ese slot aparece tachado en la grilla mientras el
 resto se mantienen libres — confirmando que el cálculo libre/ocupado del
 frontend coincide con el estado real del backend.
 
+## Reservations: crear, listar, cancelar (punto 5 — completado)
+
+- `src/features/reservations/hooks.ts`: `useCreateReservationMutation` invalida
+  tanto el cache de slots del resource como el de "mis reservas" en
+  `onSettled` (exito **o** error) — un 409 significa que otro usuario tomo
+  el slot justo antes, asi que el cache de disponibilidad quedo stale de
+  cualquier manera y hay que refrescarlo para que la grilla lo muestre como
+  ocupado. `useCancelReservationMutation` invalida lo mismo en `onSuccess`.
+- `ReserveSlotDialog`: confirmar un slot libre (click en `SlotGrid`, ahora
+  interactivo) dispara la creacion de la reserva. Si el backend devuelve
+  **409** (`OverlappingReservationException`, alguien reservo ese mismo
+  slot mientras el usuario tenia el dialogo abierto) se distingue del resto
+  de errores con un toast especifico ("Este horario ya fue reservado por
+  otra persona. Elegi otro horario.") en vez del mensaje generico.
+- `MyReservationsPage` (`/reservations/me`): lista las reservas del usuario
+  con estado (`ReservationStatusBadge`) y un boton "Cancelar" para
+  `PENDING`/`CONFIRMED`, que abre `CancelReservationDialog` (motivo
+  opcional). La regla de anticipacion minima (`cancellationWindowHours`) la
+  sigue validando *solo* el backend — no se duplica esa logica en el
+  frontend; si es tarde para cancelar, el mensaje de error que ya devuelve
+  el backend se muestra tal cual en el toast.
+
+Verificado en el navegador simulando la race condition real: con el dialogo
+de confirmacion abierto para un slot, reserve ese mismo slot **por API**
+(otro "usuario"), y al confirmar en la UI aparecio el toast de conflicto
+correcto y la grilla se actualizo mostrando el slot como ocupado. Tambien
+verificado el flujo de cancelacion completo (con motivo) reflejando el
+nuevo estado en la lista. En el camino aparecio el mismo bug de
+`forwardRef` que ya habiamos visto (punto 3): `AlertDialogOverlay` y
+`AlertDialogContent` de shadcn tampoco forwardean el ref que Radix necesita
+para su animacion de entrada/salida en React 18. Se corrigio igual que
+`Input`/`Button`.
+
 ## Estructura de carpetas
 
 ```

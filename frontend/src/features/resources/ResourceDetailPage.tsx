@@ -3,10 +3,11 @@ import { useParams } from 'react-router-dom'
 import { Badge } from '@/components/ui/badge'
 import { Calendar } from '@/components/ui/calendar'
 import { Skeleton } from '@/components/ui/skeleton'
+import { ReserveSlotDialog } from '@/features/reservations/ReserveSlotDialog'
 import { dayOfWeekFromDate, formatDateLong, toDateParam } from '@/lib/date'
 import { getApiErrorMessage } from '@/lib/api-error'
 import { useAvailabilityQuery, useAvailableSlotsQuery, useResourceQuery } from './hooks'
-import { generateCandidateSlotsForDate, markAvailability } from './slot-utils'
+import { generateCandidateSlotsForDate, markAvailability, type CandidateSlot } from './slot-utils'
 import { SlotGrid } from './SlotGrid'
 
 const MAX_DAYS_AHEAD = 90
@@ -22,6 +23,7 @@ export function ResourceDetailPage() {
   const resourceId = Number(params.id)
 
   const [selectedDate, setSelectedDate] = useState<Date>(startOfToday())
+  const [selectedSlot, setSelectedSlot] = useState<CandidateSlot | null>(null)
 
   const resourceQuery = useResourceQuery(resourceId)
   const availabilityQuery = useAvailabilityQuery(resourceId)
@@ -99,11 +101,17 @@ export function ResourceDetailPage() {
             ) : slotsQuery.isError ? (
               <p className="text-destructive">{getApiErrorMessage(slotsQuery.error)}</p>
             ) : (
-              <SlotGrid slots={slotsWithAvailability} />
+              <SlotGrid slots={slotsWithAvailability} onSelectSlot={setSelectedSlot} />
             )}
           </div>
         </div>
       )}
+
+      <ReserveSlotDialog
+        resourceId={resourceId}
+        slot={selectedSlot}
+        onOpenChange={(open) => !open && setSelectedSlot(null)}
+      />
     </div>
   )
 }

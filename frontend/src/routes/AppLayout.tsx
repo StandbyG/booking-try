@@ -23,6 +23,9 @@ export function AppLayout() {
               <NavLink to="/" end className={navLinkClass}>
                 Recursos
               </NavLink>
+              <NavLink to="/reservations/me" className={navLinkClass}>
+                Mis reservas
+              </NavLink>
             </nav>
           </div>
           <div className="flex items-center gap-3">

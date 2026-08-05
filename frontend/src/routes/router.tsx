@@ -1,6 +1,7 @@
 import { createBrowserRouter } from 'react-router-dom'
 import { LoginPage } from '@/features/auth/LoginPage'
 import { RegisterPage } from '@/features/auth/RegisterPage'
+import { MyReservationsPage } from '@/features/reservations/MyReservationsPage'
 import { ResourceDetailPage } from '@/features/resources/ResourceDetailPage'
 import { ResourceListPage } from '@/features/resources/ResourceListPage'
 import { AppLayout } from './AppLayout'
@@ -28,6 +29,7 @@ export const router = createBrowserRouter([
         children: [
           { path: '/', element: <ResourceListPage /> },
           { path: '/resources/:id', element: <ResourceDetailPage /> },
+          { path: '/reservations/me', element: <MyReservationsPage /> },
         ],
       },
     ],

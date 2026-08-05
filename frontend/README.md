@@ -93,6 +93,35 @@ normal en componentes función); con React 18 eso rompía el registro de
 inputs de React Hook Form (`"Function components cannot be given refs"`).
 Se agregó `React.forwardRef` explícito a ambos.
 
+## Resources + availability: listado y calendario de slots (punto 4 — completado)
+
+- `src/features/resources/hooks.ts`: queries de TanStack Query para
+  resources, availability de un resource, y slots disponibles en un rango
+  (`from`/`to`).
+- `src/features/resources/slot-utils.ts`: reconstruye en el frontend la
+  misma grilla de slots que generaría `SlotServiceImpl` del backend
+  (combinando las reglas de `Availability` con `slotDurationMinutes`), y la
+  cruza contra los slots libres que devuelve la API. El backend solo expone
+  los libres; esto es lo que permite mostrar también los **ocupados**
+  (tachados/grises) sin necesitar un endpoint nuevo.
+- `src/lib/date.ts`: utilidades de fecha (mapeo `Date.getDay()` ↔
+  `DayOfWeek` del backend, formato para el query param `from`/`to`, etc),
+  con `date-fns` + locale `es`.
+- `ResourceListPage`: grid de recursos (`ResourceCard`), con estados de
+  loading (`Skeleton`), error y vacío.
+- `ResourceDetailPage`: info del resource + un `Calendar` de shadcn/ui
+  (`mode="single"`) que **deshabilita los días sin ninguna regla de
+  disponibilidad** para ese resource (comparando el día de la semana contra
+  las reglas), y debajo, la grilla de slots del día seleccionado via
+  `SlotGrid` (verde = libre, tachado/gris = ocupado).
+
+Verificado en el navegador: el calendario deshabilita correctamente todos
+los días que no son el día de semana configurado (en la prueba, solo los
+miércoles quedan seleccionables), y al crear una reserva de prueba por API
+para un slot puntual, ese slot aparece tachado en la grilla mientras el
+resto se mantienen libres — confirmando que el cálculo libre/ocupado del
+frontend coincide con el estado real del backend.
+
 ## Estructura de carpetas
 
 ```

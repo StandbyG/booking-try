@@ -1,9 +1,10 @@
 import { createBrowserRouter } from 'react-router-dom'
 import { LoginPage } from '@/features/auth/LoginPage'
 import { RegisterPage } from '@/features/auth/RegisterPage'
+import { ResourceDetailPage } from '@/features/resources/ResourceDetailPage'
+import { ResourceListPage } from '@/features/resources/ResourceListPage'
 import { AppLayout } from './AppLayout'
 import { AuthLayout } from './AuthLayout'
-import { HomePage } from './HomePage'
 import { ProtectedRoute, PublicOnlyRoute } from './ProtectedRoute'
 
 export const router = createBrowserRouter([
@@ -24,7 +25,10 @@ export const router = createBrowserRouter([
     children: [
       {
         element: <AppLayout />,
-        children: [{ path: '/', element: <HomePage /> }],
+        children: [
+          { path: '/', element: <ResourceListPage /> },
+          { path: '/resources/:id', element: <ResourceDetailPage /> },
+        ],
       },
     ],
   },

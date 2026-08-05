@@ -1,0 +1,17 @@
+target/
+*.class
+
+# IDE
+.idea/
+*.iml
+.vscode/
+
+# OS
+.DS_Store
+
+# Env / secrets
+.env
+*.env.local
+
+# Claude Code local settings (machine-specific permissions, not shared)
+.claude/settings.local.json

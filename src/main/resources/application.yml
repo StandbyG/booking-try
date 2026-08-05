@@ -1,0 +1,50 @@
+spring:
+  application:
+    name: booking-engine
+
+  datasource:
+    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5433}/${DB_NAME:booking}
+    username: ${DB_USER:booking}
+    password: ${DB_PASSWORD:booking}
+    hikari:
+      pool-name: booking-hikari-pool
+      maximum-pool-size: 10
+
+  jpa:
+    hibernate:
+      # El esquema lo gestiona Flyway; Hibernate solo valida que la entidad coincida.
+      ddl-auto: validate
+    open-in-view: false
+    properties:
+      hibernate:
+        jdbc:
+          time_zone: UTC
+        format_sql: true
+    show-sql: false
+
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+    baseline-on-migrate: true
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+  api-docs:
+    path: /v3/api-docs
+
+server:
+  port: ${SERVER_PORT:8080}
+
+booking:
+  jwt:
+    secret: ${JWT_SECRET:change-this-secret-in-production-please-make-it-long-and-random}
+    access-token-expiration-minutes: ${JWT_ACCESS_EXP_MIN:60}
+    refresh-token-expiration-days: ${JWT_REFRESH_EXP_DAYS:7}
+  reservation:
+    default-cancellation-window-hours: 24
+
+logging:
+  level:
+    com.portfolio.booking: DEBUG
+    org.hibernate.SQL: WARN

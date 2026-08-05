@@ -1,0 +1,24 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: booking-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${DB_NAME:-booking}
+      POSTGRES_USER: ${DB_USER:-booking}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-booking}
+    ports:
+      # 5433 en el host (no 5432): en muchas maquinas de desarrollo ya hay un
+      # Postgres nativo escuchando en 5432, que intercepta "localhost:5432"
+      # antes que el contenedor. Ajusta DB_PORT si preferis otro puerto.
+      - "${DB_PORT:-5433}:5432"
+    volumes:
+      - booking-postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-booking} -d ${DB_NAME:-booking}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  booking-postgres-data:

@@ -62,6 +62,37 @@ navegador bloqueaba todas las llamadas desde `localhost:5173`. Se agregó
 `SecurityConfig.corsConfigurationSource()` en el backend, configurable vía
 `booking.cors.allowed-origins` / `CORS_ALLOWED_ORIGINS`.
 
+## Auth store + login/registro + rutas protegidas (punto 3 — completado)
+
+- `src/store/auth.store.ts`: store de Zustand, wrapper reactivo sobre
+  `lib/auth-token.ts` (que sigue siendo la fuente de verdad real). Se
+  inicializa leyendo `localStorage` para no perder la sesión en un refresh
+  de página.
+- `src/features/auth/`: `schemas.ts` (Zod, reflejan las validaciones del
+  backend: password min 8, email válido, etc), `hooks.ts` (mutations de
+  TanStack Query para login/register que llaman a `authStore.setSession` en
+  `onSuccess`), `LoginForm.tsx` / `RegisterForm.tsx` (React Hook Form +
+  shadcn `Form`), y sus páginas.
+- `src/routes/`: `ProtectedRoute` (redirige a `/login` si no hay sesión, y
+  opcionalmente exige un rol) y `PublicOnlyRoute` (si ya hay sesión, saca a
+  quien visita `/login` o `/register`). `AppLayout` (header con nombre/rol
+  del usuario y logout) y `AuthLayout` (card centrada) como layouts.
+- `src/lib/api-error.ts` ganó `applyValidationErrors`, que mapea los
+  `validationErrors` de un 400 del backend a los campos del formulario via
+  `setError` de React Hook Form (usado en `RegisterForm`).
+- Notificaciones con `sonner` (shadcn `Toaster`), montado una sola vez en
+  `App.tsx`.
+
+Verificado con un flujo completo end-to-end en el navegador (Playwright):
+visita sin sesión → redirect a `/login`; registro → redirect a `/` protegida;
+visitar `/login` estando logueado → redirect a `/`; logout → `/login`; login
+de nuevo; password incorrecta → toast de error sin navegar. En el camino
+encontré y arreglé otro bug real: los componentes `Input` y `Button` de
+shadcn se generan sin `forwardRef` (asumen React 19, donde `ref` es una prop
+normal en componentes función); con React 18 eso rompía el registro de
+inputs de React Hook Form (`"Function components cannot be given refs"`).
+Se agregó `React.forwardRef` explícito a ambos.
+
 ## Estructura de carpetas
 
 ```

@@ -1,4 +1,5 @@
 import { isAxiosError } from 'axios'
+import type { FieldValues, Path, UseFormSetError } from 'react-hook-form'
 import type { ApiErrorResponse } from '@/types'
 
 /** Extrae el ApiErrorResponse del backend de un error de axios, si existe. */
@@ -24,4 +25,23 @@ export function getApiErrorMessage(error: unknown): string {
 export function getApiErrorStatus(error: unknown): number | null {
   if (isAxiosError(error) && error.response) return error.response.status
   return null
+}
+
+/**
+ * Mapea los validationErrors de campo del backend (400 de Bean Validation)
+ * a los campos de un formulario de React Hook Form via setError. Devuelve
+ * true si encontro y aplico errores de campo (asi el caller sabe si todavia
+ * necesita mostrar un toast generico o no).
+ */
+export function applyValidationErrors<TFieldValues extends FieldValues>(
+  error: unknown,
+  setError: UseFormSetError<TFieldValues>,
+): boolean {
+  const apiError = getApiError(error)
+  if (!apiError?.validationErrors?.length) return false
+
+  for (const fieldError of apiError.validationErrors) {
+    setError(fieldError.field as Path<TFieldValues>, { message: fieldError.message })
+  }
+  return true
 }

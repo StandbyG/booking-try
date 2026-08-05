@@ -1,12 +1,15 @@
-import { Button } from '@/components/ui/button'
+import { QueryClientProvider } from '@tanstack/react-query'
+import { RouterProvider } from 'react-router-dom'
+import { Toaster } from '@/components/ui/sonner'
+import { queryClient } from '@/lib/query-client'
+import { router } from '@/routes/router'
 
 function App() {
   return (
-    <div className="flex min-h-svh flex-col items-center justify-center gap-4">
-      <h1 className="text-2xl font-semibold text-foreground">Booking Engine</h1>
-      <p className="text-muted-foreground">Setup del frontend en progreso.</p>
-      <Button>shadcn/ui funcionando</Button>
-    </div>
+    <QueryClientProvider client={queryClient}>
+      <RouterProvider router={router} />
+      <Toaster richColors position="top-right" />
+    </QueryClientProvider>
   )
 }
 

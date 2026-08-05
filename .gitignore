@@ -1,6 +1,13 @@
 target/
 *.class
 
+# Frontend (Vite/Node)
+node_modules/
+dist/
+dist-ssr/
+*.local
+*.tsbuildinfo
+
 # IDE
 .idea/
 *.iml

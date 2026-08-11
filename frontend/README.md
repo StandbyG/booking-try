@@ -196,6 +196,35 @@ convirtiendo el valor a numero explicitamente en el `onChange` del input
 (`e.target.valueAsNumber`) en vez de pelear con los genericos de
 `Resolver`.
 
+## Pulido de UI/UX y responsive (punto 7 — completado)
+
+- **Code-splitting por ruta** (`React.lazy` + `Suspense` en `AppLayout`/
+  `AuthLayout`): el bundle inicial venia creciendo sin limite (734 KB sin
+  gzip al terminar el punto 6, con el warning de Vite de chunk > 500 KB).
+  Cada pagina (y sobre todo todo el modulo de `admin/`, que un cliente
+  normal nunca descarga) ahora es su propio chunk cargado on-demand. El
+  bundle inicial bajo a ~389 KB (123 KB gzip) y el warning desaparecio.
+- **Nav mobile**: el header con 3 links + nombre + rol + boton de logout no
+  entraba en una pantalla angosta sin partirse en 3 lineas sueltas. Se
+  agrego un `Sheet` (drawer) de shadcn/ui: en mobile el header se reduce a
+  logo + boton de menu, que abre un panel lateral con los links, el usuario
+  y "Cerrar sesion"; en desktop (`sm:` en adelante) se mantiene el layout
+  horizontal original. El drawer se cierra solo al navegar.
+- **Tablas de admin → cards en mobile**: `AdminResourceListPage` y
+  `ResourceReservationsTable` (ambas con columna "Acciones" a la derecha)
+  quedaban con esa columna fuera de pantalla en mobile, solo alcanzable con
+  scroll horizontal — mala UX para la accion mas importante de la fila. Se
+  agrego una vista de cards apiladas para mobile (mismo patron que ya
+  funcionaba bien en `MyReservationsPage`) y se dejo la tabla original solo
+  para `sm:` en adelante.
+- Se agrego una `NotFoundPage` (ruta catch-all `*`) para URLs invalidas.
+
+Verificado con capturas reales en viewport mobile (375×812, iPhone SE) en
+las 6 pantallas principales: confirmado sin overflow horizontal en ninguna
+(`document.documentElement.scrollWidth` vs `clientWidth`) antes y despues
+de los fixes, y con capturas visuales confirmando que el drawer, las cards
+de admin y la grilla de slots se ven bien en ese ancho.
+
 ## Estructura de carpetas
 
 ```

@@ -1,14 +1,43 @@
+import { lazy } from 'react'
 import { createBrowserRouter } from 'react-router-dom'
-import { AdminResourceDetailPage } from '@/features/admin/AdminResourceDetailPage'
-import { AdminResourceListPage } from '@/features/admin/AdminResourceListPage'
-import { LoginPage } from '@/features/auth/LoginPage'
-import { RegisterPage } from '@/features/auth/RegisterPage'
-import { MyReservationsPage } from '@/features/reservations/MyReservationsPage'
-import { ResourceDetailPage } from '@/features/resources/ResourceDetailPage'
-import { ResourceListPage } from '@/features/resources/ResourceListPage'
 import { AppLayout } from './AppLayout'
 import { AuthLayout } from './AuthLayout'
+import { NotFoundPage } from './NotFoundPage'
 import { ProtectedRoute, PublicOnlyRoute } from './ProtectedRoute'
+
+// Code-splitting por ruta: cada feature (sobre todo admin, que solo cargan
+// los admins) queda en su propio chunk en vez de ir todo en el bundle
+// inicial. Los layouts envuelven su <Outlet/> en <Suspense> (ver
+// AppLayout.tsx / AuthLayout.tsx).
+const LoginPage = lazy(() =>
+  import('@/features/auth/LoginPage').then((m) => ({ default: m.LoginPage })),
+)
+const RegisterPage = lazy(() =>
+  import('@/features/auth/RegisterPage').then((m) => ({ default: m.RegisterPage })),
+)
+const ResourceListPage = lazy(() =>
+  import('@/features/resources/ResourceListPage').then((m) => ({ default: m.ResourceListPage })),
+)
+const ResourceDetailPage = lazy(() =>
+  import('@/features/resources/ResourceDetailPage').then((m) => ({
+    default: m.ResourceDetailPage,
+  })),
+)
+const MyReservationsPage = lazy(() =>
+  import('@/features/reservations/MyReservationsPage').then((m) => ({
+    default: m.MyReservationsPage,
+  })),
+)
+const AdminResourceListPage = lazy(() =>
+  import('@/features/admin/AdminResourceListPage').then((m) => ({
+    default: m.AdminResourceListPage,
+  })),
+)
+const AdminResourceDetailPage = lazy(() =>
+  import('@/features/admin/AdminResourceDetailPage').then((m) => ({
+    default: m.AdminResourceDetailPage,
+  })),
+)
 
 export const router = createBrowserRouter([
   {
@@ -43,4 +72,5 @@ export const router = createBrowserRouter([
       },
     ],
   },
+  { path: '*', element: <NotFoundPage /> },
 ])

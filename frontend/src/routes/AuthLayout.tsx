@@ -1,5 +1,7 @@
+import { Suspense } from 'react'
 import { Outlet } from 'react-router-dom'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { PageFallback } from './PageFallback'
 
 export function AuthLayout() {
   return (
@@ -9,7 +11,9 @@ export function AuthLayout() {
           <CardTitle className="text-center text-xl">Booking Engine</CardTitle>
         </CardHeader>
         <CardContent>
-          <Outlet />
+          <Suspense fallback={<PageFallback />}>
+            <Outlet />
+          </Suspense>
         </CardContent>
       </Card>
     </div>

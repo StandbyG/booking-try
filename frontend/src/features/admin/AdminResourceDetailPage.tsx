@@ -32,15 +32,20 @@ export function AdminResourceDetailPage() {
   return (
     <div className="space-y-8">
       <div>
-        <div className="flex items-center justify-between gap-2">
-          <div className="flex items-center gap-2">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex flex-wrap items-center gap-2">
             <h1 className="text-xl font-semibold">{resource.name}</h1>
             {resource.category && <Badge variant="secondary">{resource.category}</Badge>}
             <Badge variant={resource.active ? 'outline' : 'secondary'}>
               {resource.active ? 'Activo' : 'Inactivo'}
             </Badge>
           </div>
-          <Button variant="outline" size="sm" onClick={() => setDialogOpen(true)}>
+          <Button
+            variant="outline"
+            size="sm"
+            className="self-start sm:self-auto"
+            onClick={() => setDialogOpen(true)}
+          >
             Editar
           </Button>
         </div>
